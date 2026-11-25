@@ -37,3 +37,8 @@ Replace the sample values in `index.html`:
 - NAFDAC registration numbers once issued
 
 Card payments (Paystack or Flutterwave) can be added once the site is on its own domain.
+
+## Brand
+
+`brand/` holds the AFIA Water & Beverages logo (ripple icon + "afia" wordmark, lettering outlined so no font is needed):
+horizontal and stacked versions in light and dark, the icon, a WhatsApp/social profile picture and the site favicon, each as SVG (for printing, any size) and PNG.
