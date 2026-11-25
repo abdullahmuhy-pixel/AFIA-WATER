@@ -1,6 +1,6 @@
-# AFIA Water — website and online store
+# AFIA Water & Beverages — website and online store
 
-Premium purified water from Lagos, Nigeria, plus OMI Daily sachet water.
+AFIA premium purified water, OMI Daily sachet water and AYO non-alcoholic drink mixes, from Lagos, Nigeria.
 
 A single-page static site (`index.html`) with:
 

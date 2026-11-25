@@ -1,5 +1,5 @@
 /**
- * AFIA Water: order book in Google Sheets.
+ * AFIA Water & Beverages: order book in Google Sheets.
  * Standalone version: create a new project at script.google.com, paste this in, run setup() once,
  * then Deploy → New deployment → Web app (Execute as: Me, Who has access: Anyone).
  * It writes to the "AFIA Orders" spreadsheet below.
@@ -18,7 +18,13 @@ const CATALOGUE = {
   lag33: { name: 'Lagoon Sparkling 33cl', live: false, packs: [['Single', 1, 1100], ['Case of 24', 24, 24000]] },
   lag75: { name: 'Lagoon Sparkling 75cl', live: false, packs: [['Single', 1, 2200], ['Case of 12', 12, 24600]] },
   omi:   { name: 'OMI Daily sachet (20 × 50cl per bag)', live: true,
-           packs: [['10 bags', 10, 5500], ['50 bags', 50, 24000], ['100 bags', 100, 45000], ['200 bags · distributor', 200, 86000]] }
+           packs: [['10 bags', 10, 5500], ['50 bags', 50, 24000], ['100 bags', 100, 45000], ['200 bags · distributor', 200, 86000]] },
+  // AYO drink mixes (1 part AYO + 5 parts water)
+  ayo_zobo: { name: 'AYO Zobo', live: true, packs: [['1 litre bottle', 1, 2800], ['Carton of 6 × 1 litre', 6, 15600], ['5 litre Party Pack', 1, 12500]] },
+  ayo_chapman: { name: 'AYO Chapman', live: true, packs: [['1 litre bottle', 1, 2800], ['Carton of 6 × 1 litre', 6, 15600], ['5 litre Party Pack', 1, 12500]] },
+  ayo_orange: { name: 'AYO Orange', live: true, packs: [['1 litre bottle', 1, 2800], ['Carton of 6 × 1 litre', 6, 15600], ['5 litre Party Pack', 1, 12500]] },
+  ayo_pineapple: { name: 'AYO Pineapple', live: true, packs: [['1 litre bottle', 1, 2800], ['Carton of 6 × 1 litre', 6, 15600], ['5 litre Party Pack', 1, 12500]] },
+  ayo_ginger: { name: 'AYO Ginger-Lemon', live: true, packs: [['1 litre bottle', 1, 2800], ['Carton of 6 × 1 litre', 6, 15600], ['5 litre Party Pack', 1, 12500]] }
 };
 
 const ZONES = [
@@ -137,7 +143,7 @@ function placeOrder(b) {
     itemsSheet.getRange(itemsSheet.getLastRow(), 2).setNumberFormat(DATE_FMT);
   });
 
-  notify('New AFIA order ' + code + ' · ₦' + (subtotal + fee).toLocaleString(),
+  notify('New order ' + code + ' · ₦' + (subtotal + fee).toLocaleString(),
     summary + '\n\nTotal: ₦' + (subtotal + fee).toLocaleString() + '\n' + name + ' · ' + phone + '\n' + address + '\n' + zone[0] + ' · ' + date);
   return { ok: true, code: code, subtotal: subtotal, delivery_fee: fee, total: subtotal + fee };
 }
@@ -153,7 +159,7 @@ function saveEnquiry(b) {
   const enq = book().getSheetByName(SHEETS.enquiries.name);
   enq.appendRow([new Date(), kind, name, phone, details, 'New', '']);
   enq.getRange(enq.getLastRow(), 1).setNumberFormat(DATE_FMT);
-  notify('New AFIA enquiry: ' + kind + ' · ' + name, details + '\n\n' + name + ' · ' + phone);
+  notify('New enquiry: ' + kind + ' · ' + name, details + '\n\n' + name + ' · ' + phone);
   return { ok: true };
 }
 
