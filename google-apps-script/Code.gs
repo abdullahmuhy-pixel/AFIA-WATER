@@ -12,11 +12,11 @@ const SHEET_ID = '17_6QfCZskwsArJ8c7IgUq4VewrJ27okI8w2GjOLyxKs';
 function book() { return SpreadsheetApp.openById(SHEET_ID); }
 
 const CATALOGUE = {
-  col50: { name: 'Column 50cl', live: true,  packs: [['Single', 1, 1200], ['Pack of 12', 12, 13200], ['Case of 24', 24, 25200]] },
-  adi33: { name: 'Adire 33cl',  live: true,  packs: [['Single', 1, 900],  ['Pack of 12', 12, 9900],  ['Case of 24', 24, 18900]] },
-  peb75: { name: 'Pebble 75cl', live: false, packs: [['Single', 1, 1800], ['Pack of 6', 6, 10200],   ['Case of 12', 12, 19800]] },
-  lag33: { name: 'Lagoon Sparkling 33cl', live: false, packs: [['Single', 1, 1100], ['Case of 24', 24, 24000]] },
-  lag75: { name: 'Lagoon Sparkling 75cl', live: false, packs: [['Single', 1, 2200], ['Case of 12', 12, 24600]] },
+  col50: { name: 'Column 50cl', live: true,  packs: [['Single', 1, 1200], ['Box of 6', 6, 6900], ['Box of 12', 12, 13200], ['Case of 24', 24, 25200]] },
+  adi33: { name: 'Adire 33cl',  live: true,  packs: [['Single', 1, 900], ['Box of 6', 6, 5100], ['Box of 12', 12, 9900], ['Case of 24', 24, 18900]] },
+  peb75: { name: 'Pebble 75cl', live: false, packs: [['Single', 1, 1800], ['Box of 6', 6, 10200], ['Box of 12', 12, 19800], ['Case of 24', 24, 38400]] },
+  lag33: { name: 'Lagoon Sparkling 33cl', live: false, packs: [['Single', 1, 1100], ['Box of 6', 6, 6300], ['Box of 12', 12, 12300], ['Case of 24', 24, 24000]] },
+  lag75: { name: 'Lagoon Sparkling 75cl', live: false, packs: [['Single', 1, 2200], ['Box of 6', 6, 12600], ['Box of 12', 12, 24600], ['Case of 24', 24, 48000]] },
   omi:   { name: 'OMI Daily sachet (20 × 50cl per bag)', live: true,
            packs: [['10 bags', 10, 5500], ['50 bags', 50, 24000], ['100 bags', 100, 45000], ['200 bags · distributor', 200, 86000]] },
   // AYO drink mixes (1 part AYO + 5 parts water)

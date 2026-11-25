@@ -104,7 +104,7 @@ pre{white-space:pre-wrap;background:var(--panel);padding:12px;border-radius:12px
 <section class="band" id="shop">
 <div class="wrap">
 <h2>Shop the range</h2>
-<p class="muted">Order singles, packs or cases. Bottles not yet in production show their launch phase; you can ask to be told first.</p>
+<p class="muted">Order single bottles, or boxes of 6, 12 or 24. Bigger boxes cost less per bottle. Bottles not yet in production show their launch phase; you can ask to be told first.</p>
 <div class="grid" id="products"></div>
 <p class="note">Prices shown are sample launch prices, to be confirmed before going live.</p>
 </div>
@@ -255,11 +255,11 @@ function bottle(t,h,spark,p){
   return `<svg viewBox="0 0 200 520" width="${w}" height="${h}" aria-hidden="true"><defs><linearGradient id="${g}" x1="0" x2="1"><stop offset="0" stop-color="${D.tint}" stop-opacity="${D.o[0]}"/><stop offset=".45" stop-color="${D.tint}" stop-opacity="${D.o[1]}"/><stop offset="1" stop-color="${D.tint}" stop-opacity="${D.o[2]}"/></linearGradient></defs>${D.cap}<path d="${D.p}" fill="url(#${g})" stroke="#c4d8df" stroke-width="1.5"/>${D.txt}</svg>`;
 }
 const products=[
- {id:'col50',name:'Column',size:'50cl',kind:'Still',d:'column',h:220,desc:'Everyday premium still water for desks, gyms and bags.',packs:[['Single',1,1200],['Pack of 12',12,13200],['Case of 24',24,25200]],live:true},
- {id:'adi33',name:'Adire',size:'33cl',kind:'Still',d:'adire',h:180,desc:'Small, proudly Nigerian bottle for events and gifting.',packs:[['Single',1,900],['Pack of 12',12,9900],['Case of 24',24,18900]],live:true},
- {id:'peb75',name:'Pebble',size:'75cl',kind:'Still',d:'pebble',h:230,desc:'Table and spa bottle for restaurants, hotels and wellness.',packs:[['Single',1,1800],['Pack of 6',6,10200],['Case of 12',12,19800]],live:false,phase:'Phase 2 · about 6 months after launch'},
- {id:'lag33',name:'Lagoon Sparkling',size:'33cl',kind:'Sparkling',d:'lagoon',h:180,spark:true,desc:'Fine bubbles for bars, lounges and minibars.',packs:[['Single',1,1100],['Case of 24',24,24000]],live:false,phase:'Phase 3 · with carbonation line'},
- {id:'lag75',name:'Lagoon Sparkling',size:'75cl',kind:'Sparkling',d:'lagoon',h:230,spark:true,desc:'Sparkling table water for fine dining.',packs:[['Single',1,2200],['Case of 12',12,24600]],live:false,phase:'Phase 3 · with carbonation line'},
+ {id:'col50',name:'Column',size:'50cl',kind:'Still',d:'column',h:220,desc:'Everyday premium still water for desks, gyms and bags.',packs:[['Single',1,1200],['Box of 6',6,6900],['Box of 12',12,13200],['Case of 24',24,25200]],live:true},
+ {id:'adi33',name:'Adire',size:'33cl',kind:'Still',d:'adire',h:180,desc:'Small, proudly Nigerian bottle for events and gifting.',packs:[['Single',1,900],['Box of 6',6,5100],['Box of 12',12,9900],['Case of 24',24,18900]],live:true},
+ {id:'peb75',name:'Pebble',size:'75cl',kind:'Still',d:'pebble',h:230,desc:'Table and spa bottle for restaurants, hotels and wellness.',packs:[['Single',1,1800],['Box of 6',6,10200],['Box of 12',12,19800],['Case of 24',24,38400]],live:false,phase:'Phase 2 · about 6 months after launch'},
+ {id:'lag33',name:'Lagoon Sparkling',size:'33cl',kind:'Sparkling',d:'lagoon',h:180,spark:true,desc:'Fine bubbles for bars, lounges and minibars.',packs:[['Single',1,1100],['Box of 6',6,6300],['Box of 12',12,12300],['Case of 24',24,24000]],live:false,phase:'Phase 3 · with carbonation line'},
+ {id:'lag75',name:'Lagoon Sparkling',size:'75cl',kind:'Sparkling',d:'lagoon',h:230,spark:true,desc:'Sparkling table water for fine dining.',packs:[['Single',1,2200],['Box of 6',6,12600],['Box of 12',12,24600],['Case of 24',24,48000]],live:false,phase:'Phase 3 · with carbonation line'},
  {id:'omi',name:'OMI Daily',size:'20 × 50cl per bag',kind:'Sachet',d:'sachet',h:190,daily:true,desc:'Purified sachet water, sold by the bag. Minimum 10 bags.',packs:[['10 bags',10,5500],['50 bags',50,24000],['100 bags · free delivery',100,45000],['200 bags · distributor',200,86000]],live:true},
  {id:'ayo_zobo',name:'AYO Zobo',flavour:'Zobo',size:'1L · 5L',kind:'Drink mix',d:'ayo',h:220,ayo:true,color:'#8E1537',dark:'#5C0B22',desc:'Hibiscus, ginger and clove. Our signature.',packs:[['1 litre bottle',1,2800],['Carton of 6 × 1 litre',6,15600],['5 litre Party Pack',1,12500]],live:true},
  {id:'ayo_chapman',name:'AYO Chapman',flavour:'Chapman',size:'1L · 5L',kind:'Drink mix',d:'ayo',h:220,ayo:true,color:'#D2402A',dark:'#8F2416',desc:'The party classic, 0% alcohol.',packs:[['1 litre bottle',1,2800],['Carton of 6 × 1 litre',6,15600],['5 litre Party Pack',1,12500]],live:true},
@@ -269,14 +269,14 @@ const products=[
 ];
 const zones=[['Lekki, VI, Ikoyi',2500],['Ajah, Sangotedo, Ibeju-Lekki',3500],['Ikeja, Yaba, Surulere, Gbagada, Maryland',3000],['Ikorodu, Alimosho, Festac, Badagry road',4500],['Pickup from factory',0]];
 const FREE=50000;
-let cart=[];try{cart=JSON.parse(localStorage.getItem('afiaCart')||'[]')}catch(e){}
-const save=()=>{try{localStorage.setItem('afiaCart',JSON.stringify(cart))}catch(e){}};
+let cart=[];try{cart=JSON.parse(localStorage.getItem('afiaCart2')||'[]')}catch(e){}
+const save=()=>{try{localStorage.setItem('afiaCart2',JSON.stringify(cart))}catch(e){}};
 document.getElementById('heroLine').innerHTML=bottle('adire',150)+bottle('column',190)+bottle('pebble',210)+bottle('lagoon',200,true);
 document.getElementById('eventPic').innerHTML=bottle('adire',220);
 document.getElementById('zoneTable').innerHTML=zones.map(z=>`<tr><td>${z[0]}</td><td class="n">${z[1]?naira(z[1]):'Free'}</td></tr>`).join('');
 const card=p=>`<article class="card"><div class="pic">${bottle(p.d,p.h,p.spark,p)}</div><div class="body">
 <div class="row"><h3>${p.name}</h3><span class="tag">${p.kind} · ${p.size}</span></div><p class="muted" style="margin:0">${p.desc}</p>
-${p.live?`<label for="pk-${p.id}">Pack</label><select id="pk-${p.id}">${p.packs.map((k,i)=>`<option value="${i}">${k[0]} · ${naira(k[2])}</option>`).join('')}</select>
+${p.live?`<label for="pk-${p.id}">Pack</label><select id="pk-${p.id}">${p.packs.map((k,i)=>`<option value="${i}">${k[0]} · ${naira(k[2])}${k[1]>1&&!p.daily&&!p.ayo?' ('+naira(k[2]/k[1])+' each)':''}</option>`).join('')}</select>
 <div class="qty"><input id="q-${p.id}" type="number" min="1" value="1" aria-label="Quantity"><button class="btn pri add" data-id="${p.id}" type="button" style="flex:1">Add to cart</button></div><div id="m-${p.id}" class="muted" aria-live="polite"></div>`
 :`<p class="muted" style="margin:0">${p.phase} · from ${naira(p.packs[0][2])}</p><a class="btn ghost" href="https://wa.me/${WA}?text=${encodeURIComponent('Hello AFIA, please tell me when '+p.name+' '+p.size+' launches.')}">Tell me when it launches</a>`}
 </div></article>`;
