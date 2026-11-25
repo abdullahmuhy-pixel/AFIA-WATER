@@ -1,6 +1,5 @@
-// AFIA Water: Supabase connection (public values only: the publishable key is safe in the browser;
-// the database's row security decides who can read what).
+// AFIA Water: where the website sends orders and enquiries.
+// Paste your Google Apps Script web app URL (ends in /exec). Left empty, orders go by WhatsApp only.
 window.AFIA_CONFIG = {
-  supabaseUrl: '',
-  supabaseKey: ''
+  sheetsUrl: ''
 };

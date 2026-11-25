@@ -10,16 +10,17 @@ A single-page static site (`index.html`) with:
 - Checkout that sends the order as a WhatsApp message
 - Custom event-bottle and hotel/wholesale request forms
 
-## Orders database (Supabase)
+## Orders (Google Sheets)
 
-- `supabase/migrations/001_orders.sql` creates the catalogue, orders, order items, enquiries and staff tables, with row-level security. Customers can only place orders and enquiries through the `place_order` and `submit_enquiry` functions, which re-price every item from the database. Only emails in the `admins` table can read or update orders.
-- `config.js` holds the project URL and publishable key. Left empty, the site still works and orders go by WhatsApp only.
-- `admin.html` is the staff page: sign in, see new orders live, change status (new → confirmed → paid → out for delivery → delivered), add notes, and manage event and business enquiries.
+Orders and enquiries from the website are written to a Google Sheet by a small Google Apps Script web app.
 
-To add a staff member: create their user in Supabase (Authentication → Users → Add user), then run
-`insert into public.admins (email) values ('their@email.com');`
+- `google-apps-script/Code.gs`: paste into the sheet's Apps Script editor, run `setup()` once, then deploy it as a web app (Execute as: Me, Who has access: Anyone).
+- `config.js`: paste the web app URL (ends in `/exec`) as `sheetsUrl`. Left empty, the site still works and orders go by WhatsApp only.
+- The sheet gets three tabs: **Orders** (one row per order, Status dropdown: New → Confirmed → Paid → Out for delivery → Delivered / Cancelled), **Order items** (one row per line) and **Enquiries** (event and business requests).
+- The sheet owner gets an email for every new order and enquiry.
+- Prices in `Code.gs` are what customers are charged. When you change prices, change them in `Code.gs` and in the `products` list in `index.html`, then redeploy the script (Deploy → Manage deployments → Edit → New version).
 
-When you change prices, update both `product_packs` in the database and the `products` list in `index.html`. The database price is what gets charged.
+`supabase/` holds a ready-made Postgres version of the order database for when the business moves to a paid database.
 
 ## Deploy
 
