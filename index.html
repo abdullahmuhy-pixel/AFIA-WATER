@@ -209,7 +209,7 @@ pre{white-space:pre-wrap;background:var(--panel);padding:12px;border-radius:12px
 <footer class="band">
 <div class="wrap" style="display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between">
 <div><div class="logo">AFIA<small>WATER</small></div><p>Premium purified water · Lagos, Nigeria</p></div>
-<div><p>WhatsApp / phone: <strong>+234 800 000 0000</strong><br>Email: <strong>hello@afiawater.ng</strong></p><p class="note" style="color:#a9c9d2">Sample contact details; NAFDAC reg. no. to follow.</p></div>
+<div><p>WhatsApp / phone: <a href="https://wa.me/2349077191067"><strong>+234 907 719 1067</strong></a></p><p class="note" style="color:#a9c9d2">NAFDAC reg. no. to follow.</p></div>
 </div>
 </footer>
 
@@ -227,7 +227,7 @@ pre{white-space:pre-wrap;background:var(--panel);padding:12px;border-radius:12px
 const C=window.AFIA_CONFIG||{};
 const API=C.sheetsUrl||'';
 async function api(b){const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)});const j=await r.json();if(!j.ok)throw new Error(j.error||'Failed');return j}
-const WA='2348000000000';
+const WA='2349077191067';
 const naira=n=>'₦'+Math.round(n).toLocaleString('en-NG');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let uid=0;
@@ -278,7 +278,7 @@ function render(){
   document.getElementById('count').textContent=cart.reduce((s,c)=>s+c.q,0);
   const v=document.getElementById('cartView'),t=totals();
   if(step==='done'&&lastOrder){v.innerHTML=`<div class="ok">${lastOrder.saved?`We have received order ${esc(lastOrder.id)}. We will confirm it and send payment details on WhatsApp; you can also message us now.`:`Order ${esc(lastOrder.id)} is ready to send. It is not placed until you send it to us on WhatsApp and we confirm.`}</div><pre id="sum">${esc(lastOrder.text)}</pre>
-<a class="btn pri" href="https://wa.me/${WA}?text=${encodeURIComponent(lastOrder.text)}">Send order on WhatsApp</a><button class="btn ghost" id="copy" type="button">Copy order</button><p class="muted">Or message +234 800 000 0000 with the order above. We reply with payment details.</p><button class="btn ghost" id="again" type="button">Back to shop</button>`;
+<a class="btn pri" href="https://wa.me/${WA}?text=${encodeURIComponent(lastOrder.text)}">Send order on WhatsApp</a><button class="btn ghost" id="copy" type="button">Copy order</button><p class="muted">Or message +234 907 719 1067 with the order above. We reply with payment details.</p><button class="btn ghost" id="again" type="button">Back to shop</button>`;
     document.getElementById('copy').onclick=async e=>{try{await navigator.clipboard.writeText(lastOrder.text);e.target.textContent='Copied'}catch(_){e.target.textContent='Select the text above to copy'}};
     document.getElementById('again').onclick=()=>{step='cart';lastOrder=null;render();closeD()};return}
   if(!cart.length){v.innerHTML='<p class="muted">Your cart is empty. Column 50cl, Adire 33cl and OMI Daily sachet water are available now.</p><a class="btn pri" href="#shop" id="toShop">Browse bottles</a>';document.getElementById('toShop').onclick=closeD;return}
