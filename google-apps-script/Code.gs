@@ -33,6 +33,8 @@ const FREE_DELIVERY_FROM = 50000;   // naira
 const SACHET_FREE_BAGS = 100;       // free delivery from this many sachet bags
 const EMAIL_NEW_ORDERS = true;      // email the sheet owner for each new order or enquiry
 
+const DATE_FMT = 'd mmm yyyy, h:mm am/pm';
+
 const ORDER_STATUSES = ['New', 'Confirmed', 'Paid', 'Out for delivery', 'Delivered', 'Cancelled'];
 const ENQUIRY_STATUSES = ['New', 'Contacted', 'Quoted', 'Won', 'Lost'];
 
@@ -45,6 +47,8 @@ const SHEETS = {
 /** Run once from the Apps Script editor to build the tabs. Safe to run again. */
 function setup() {
   const ss = book();
+  ss.setSpreadsheetTimeZone('Africa/Lagos');
+  try { ss.setSpreadsheetLocale('en_NG'); } catch (e) { ss.setSpreadsheetLocale('en_GB'); }
   Object.keys(SHEETS).forEach(function (k) {
     const def = SHEETS[k];
     const sh = ss.getSheetByName(def.name) || ss.insertSheet(def.name);
@@ -53,7 +57,7 @@ function setup() {
   });
   const orders = ss.getSheetByName(SHEETS.orders.name);
   statusDropdown(orders, 3, ORDER_STATUSES);
-  orders.getRange('B2:B').setNumberFormat('d mmm yyyy, h:mm');
+  orders.getRange('B2:B').setNumberFormat(DATE_FMT);
   orders.getRange('J2:L').setNumberFormat('#,##0');
   orders.setColumnWidth(6, 260); orders.setColumnWidth(9, 320);
   const rules = [
@@ -63,11 +67,11 @@ function setup() {
   ];
   orders.setConditionalFormatRules(rules);
   const items = ss.getSheetByName(SHEETS.items.name);
-  items.getRange('B2:B').setNumberFormat('d mmm yyyy, h:mm');
+  items.getRange('B2:B').setNumberFormat(DATE_FMT);
   items.getRange('F2:F').setNumberFormat('#,##0'); items.getRange('H2:H').setNumberFormat('#,##0');
   const enq = ss.getSheetByName(SHEETS.enquiries.name);
   statusDropdown(enq, 6, ENQUIRY_STATUSES);
-  enq.getRange('A2:A').setNumberFormat('d mmm yyyy, h:mm');
+  enq.getRange('A2:A').setNumberFormat(DATE_FMT);
   enq.setColumnWidth(5, 360);
   const blank = ss.getSheetByName('Sheet1');
   if (blank && blank.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(blank);
@@ -124,9 +128,14 @@ function placeOrder(b) {
   const summary = lines.map(function (l) { return l.qty + ' × ' + l.product + ' · ' + l.pack; }).join('\n');
 
   const ss = book();
-  ss.getSheetByName(SHEETS.orders.name).appendRow([code, now, 'New', name, phone, address, zone[0], date, summary, subtotal, fee, subtotal + fee, '']);
+  const ordersSheet = ss.getSheetByName(SHEETS.orders.name);
+  ordersSheet.appendRow([code, now, 'New', name, phone, address, zone[0], date, summary, subtotal, fee, subtotal + fee, '']);
+  ordersSheet.getRange(ordersSheet.getLastRow(), 2).setNumberFormat(DATE_FMT);
   const itemsSheet = ss.getSheetByName(SHEETS.items.name);
-  lines.forEach(function (l) { itemsSheet.appendRow([code, now, l.product, l.pack, l.units, l.price, l.qty, l.total]); });
+  lines.forEach(function (l) {
+    itemsSheet.appendRow([code, now, l.product, l.pack, l.units, l.price, l.qty, l.total]);
+    itemsSheet.getRange(itemsSheet.getLastRow(), 2).setNumberFormat(DATE_FMT);
+  });
 
   notify('New AFIA order ' + code + ' · ₦' + (subtotal + fee).toLocaleString(),
     summary + '\n\nTotal: ₦' + (subtotal + fee).toLocaleString() + '\n' + name + ' · ' + phone + '\n' + address + '\n' + zone[0] + ' · ' + date);
@@ -141,7 +150,9 @@ function saveEnquiry(b) {
   const details = Object.keys(b.details || {}).slice(0, 12).map(function (k) {
     return safe(k).slice(0, 40) + ': ' + safe(b.details[k]).slice(0, 500);
   }).join('\n');
-  book().getSheetByName(SHEETS.enquiries.name).appendRow([new Date(), kind, name, phone, details, 'New', '']);
+  const enq = book().getSheetByName(SHEETS.enquiries.name);
+  enq.appendRow([new Date(), kind, name, phone, details, 'New', '']);
+  enq.getRange(enq.getLastRow(), 1).setNumberFormat(DATE_FMT);
   notify('New AFIA enquiry: ' + kind + ' · ' + name, details + '\n\n' + name + ' · ' + phone);
   return { ok: true };
 }
