@@ -1,11 +1,15 @@
 /**
  * AFIA Water: order book in Google Sheets.
- * Paste into Extensions → Apps Script of your "AFIA Orders" spreadsheet, run setup() once,
+ * Standalone version: create a new project at script.google.com, paste this in, run setup() once,
  * then Deploy → New deployment → Web app (Execute as: Me, Who has access: Anyone).
+ * It writes to the "AFIA Orders" spreadsheet below.
  *
  * Prices below are what customers are charged: the website's prices are only for display.
  * Keep them in step with the products list in index.html.
  */
+
+const SHEET_ID = '17_6QfCZskwsArJ8c7IgUq4VewrJ27okI8w2GjOLyxKs';
+function book() { return SpreadsheetApp.openById(SHEET_ID); }
 
 const CATALOGUE = {
   col50: { name: 'Column 50cl', live: true,  packs: [['Single', 1, 1200], ['Pack of 12', 12, 13200], ['Case of 24', 24, 25200]] },
@@ -40,7 +44,7 @@ const SHEETS = {
 
 /** Run once from the Apps Script editor to build the tabs. Safe to run again. */
 function setup() {
-  const ss = SpreadsheetApp.getActive();
+  const ss = book();
   Object.keys(SHEETS).forEach(function (k) {
     const def = SHEETS[k];
     const sh = ss.getSheetByName(def.name) || ss.insertSheet(def.name);
@@ -119,7 +123,7 @@ function placeOrder(b) {
   const now = new Date();
   const summary = lines.map(function (l) { return l.qty + ' × ' + l.product + ' · ' + l.pack; }).join('\n');
 
-  const ss = SpreadsheetApp.getActive();
+  const ss = book();
   ss.getSheetByName(SHEETS.orders.name).appendRow([code, now, 'New', name, phone, address, zone[0], date, summary, subtotal, fee, subtotal + fee, '']);
   const itemsSheet = ss.getSheetByName(SHEETS.items.name);
   lines.forEach(function (l) { itemsSheet.appendRow([code, now, l.product, l.pack, l.units, l.price, l.qty, l.total]); });
@@ -137,7 +141,7 @@ function saveEnquiry(b) {
   const details = Object.keys(b.details || {}).slice(0, 12).map(function (k) {
     return safe(k).slice(0, 40) + ': ' + safe(b.details[k]).slice(0, 500);
   }).join('\n');
-  SpreadsheetApp.getActive().getSheetByName(SHEETS.enquiries.name).appendRow([new Date(), kind, name, phone, details, 'New', '']);
+  book().getSheetByName(SHEETS.enquiries.name).appendRow([new Date(), kind, name, phone, details, 'New', '']);
   notify('New AFIA enquiry: ' + kind + ' · ' + name, details + '\n\n' + name + ' · ' + phone);
   return { ok: true };
 }
@@ -158,7 +162,7 @@ function notify(subject, body) {
   if (!EMAIL_NEW_ORDERS) return;
   try {
     const to = Session.getEffectiveUser().getEmail();
-    if (to) MailApp.sendEmail(to, subject, body + '\n\nOpen the sheet: ' + SpreadsheetApp.getActive().getUrl());
+    if (to) MailApp.sendEmail(to, subject, body + '\n\nOpen the sheet: ' + book().getUrl());
   } catch (err) { /* email is a convenience; the row is already saved */ }
 }
 

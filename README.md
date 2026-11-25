@@ -14,7 +14,7 @@ A single-page static site (`index.html`) with:
 
 Orders and enquiries from the website are written to a Google Sheet by a small Google Apps Script web app.
 
-- `google-apps-script/Code.gs`: paste into the sheet's Apps Script editor, run `setup()` once, then deploy it as a web app (Execute as: Me, Who has access: Anyone).
+- `google-apps-script/Code.gs`: a standalone script tied to the AFIA Orders sheet by its ID. Create a project at script.google.com, paste it in, run `setup()` once, then deploy it as a web app (Execute as: Me, Who has access: Anyone).
 - `config.js`: paste the web app URL (ends in `/exec`) as `sheetsUrl`. Left empty, the site still works and orders go by WhatsApp only.
 - The sheet gets three tabs: **Orders** (one row per order, Status dropdown: New → Confirmed → Paid → Out for delivery → Delivered / Cancelled), **Order items** (one row per line) and **Enquiries** (event and business requests).
 - The sheet owner gets an email for every new order and enquiry.
