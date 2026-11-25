@@ -221,8 +221,12 @@ pre{white-space:pre-wrap;background:var(--panel);padding:12px;border-radius:12px
 </aside>
 </div>
 
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 {
+const C=window.AFIA_CONFIG||{};
+const db=(C.supabaseUrl&&C.supabaseKey&&window.supabase)?window.supabase.createClient(C.supabaseUrl,C.supabaseKey):null;
 const WA='2348000000000';
 const naira=n=>'₦'+Math.round(n).toLocaleString('en-NG');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -273,7 +277,7 @@ function totals(){const sub=cart.reduce((s,c)=>s+lineOf(c).total,0);const bags=c
 function render(){
   document.getElementById('count').textContent=cart.reduce((s,c)=>s+c.q,0);
   const v=document.getElementById('cartView'),t=totals();
-  if(step==='done'&&lastOrder){v.innerHTML=`<div class="ok">Order ${esc(lastOrder.id)} is ready to send. It is not placed until you send it to us on WhatsApp and we confirm.</div><pre id="sum">${esc(lastOrder.text)}</pre>
+  if(step==='done'&&lastOrder){v.innerHTML=`<div class="ok">${lastOrder.saved?`We have received order ${esc(lastOrder.id)}. We will confirm it and send payment details on WhatsApp; you can also message us now.`:`Order ${esc(lastOrder.id)} is ready to send. It is not placed until you send it to us on WhatsApp and we confirm.`}</div><pre id="sum">${esc(lastOrder.text)}</pre>
 <a class="btn pri" href="https://wa.me/${WA}?text=${encodeURIComponent(lastOrder.text)}">Send order on WhatsApp</a><button class="btn ghost" id="copy" type="button">Copy order</button><p class="muted">Or message +234 800 000 0000 with the order above. We reply with payment details.</p><button class="btn ghost" id="again" type="button">Back to shop</button>`;
     document.getElementById('copy').onclick=async e=>{try{await navigator.clipboard.writeText(lastOrder.text);e.target.textContent='Copied'}catch(_){e.target.textContent='Select the text above to copy'}};
     document.getElementById('again').onclick=()=>{step='cart';lastOrder=null;render();closeD()};return}
@@ -284,20 +288,24 @@ function render(){
 <form class="f" id="checkout"><div class="full"><label for="cn">Full name</label><input id="cn" required autocomplete="name"></div><div class="full"><label for="cp">Phone / WhatsApp</label><input id="cp" required inputmode="tel" autocomplete="tel"></div><div class="full"><label for="ca">Delivery address</label><textarea id="ca" rows="2" required autocomplete="street-address"></textarea></div><div class="full"><label for="cd">Preferred delivery date</label><input id="cd" type="date"></div><div class="full"><button class="btn pri" type="submit" style="width:100%">Review order</button></div></form>`;
   v.querySelectorAll('.mini button').forEach(b=>b.onclick=()=>{const c=cart[+b.dataset.i];c.q+=+b.dataset.d;if(c.q<1)cart.splice(+b.dataset.i,1);save();render()});
   document.getElementById('zone').onchange=e=>{zone=+e.target.value;render()};
-  document.getElementById('checkout').onsubmit=e=>{e.preventDefault();const g=id=>document.getElementById(id).value.trim();
-    const id='AF-'+Date.now().toString(36).toUpperCase().slice(-6);
-    const text=`AFIA order ${id}\n`+cart.map(c=>{const l=lineOf(c);return `${c.q} × ${l.label} = ${naira(l.total)}`}).join('\n')+`\nSubtotal: ${naira(t.sub)}\nDelivery (${zones[zone][0]}): ${t.del?naira(t.del):'Free'}\nTotal: ${naira(t.all)}\n\nName: ${g('cn')}\nPhone: ${g('cp')}\nAddress: ${g('ca')}\nDate: ${g('cd')||'Next available'}`;
-    lastOrder={id,text};cart=[];save();step='done';render()};
+  document.getElementById('checkout').onsubmit=async e=>{e.preventDefault();const g=id=>document.getElementById(id).value.trim();
+    const btn=e.target.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Placing order…';
+    let id='AF-'+Date.now().toString(36).toUpperCase().slice(-6),sub=t.sub,del=t.del,all=t.all,saved=false;
+    if(db){try{const {data,error}=await db.rpc('place_order',{p_name:g('cn'),p_phone:g('cp'),p_address:g('ca'),p_delivery_date:g('cd')||null,p_zone_id:zone,p_items:cart.map(c=>({product_id:c.id,pack_index:c.pi,quantity:c.q}))});
+      if(error)throw error;const r=data[0];id=r.order_code;sub=r.subtotal;del=r.delivery_fee;all=r.total;saved=true}catch(err){console.log('Order not saved online',err)}}
+    const text=`AFIA order ${id}\n`+cart.map(c=>{const l=lineOf(c);return `${c.q} × ${l.label} = ${naira(l.total)}`}).join('\n')+`\nSubtotal: ${naira(sub)}\nDelivery (${zones[zone][0]}): ${del?naira(del):'Free'}\nTotal: ${naira(all)}\n\nName: ${g('cn')}\nPhone: ${g('cp')}\nAddress: ${g('ca')}\nDate: ${g('cd')||'Next available'}`;
+    lastOrder={id,text,saved};cart=[];save();step='done';render()};
 }
 const D=document.getElementById('drawer');
 function openD(){D.classList.add('open');D.setAttribute('aria-hidden','false');document.getElementById('closeCart').focus()}
 function closeD(){D.classList.remove('open');D.setAttribute('aria-hidden','true')}
 document.getElementById('openCart').onclick=openD;document.getElementById('closeCart').onclick=closeD;document.getElementById('shade').onclick=closeD;
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeD()});
-function req(formId,outId,build){document.getElementById(formId).addEventListener('submit',e=>{e.preventDefault();const text=build(id=>document.getElementById(id).value.trim());
-  document.getElementById(outId).innerHTML=`<div class="ok">Your request is ready. Send it to us on WhatsApp and we will reply with a quote.</div><pre>${esc(text)}</pre><a class="btn pri" href="https://wa.me/${WA}?text=${encodeURIComponent(text)}">Send on WhatsApp</a>`})}
-req('eventForm','eventOut',g=>`AFIA event bottles request\nName: ${g('evName')}\nPhone: ${g('evPhone')}\nEvent: ${g('evType')} on ${g('evDate')}\nBottles: ${g('evQty')} × Adire 33cl\nLabel colour: ${g('evColour')}\nLabel text: ${g('evText')}`);
-req('bizForm','bizOut',g=>`AFIA business enquiry\nBusiness: ${g('bzCo')} (${g('bzType')})\nContact: ${g('bzName')}, ${g('bzPhone')}\nCases per month: ${g('bzVol')}\nNeeds: ${g('bzMsg')}`);
+function req(formId,outId,kind,who,build){document.getElementById(formId).addEventListener('submit',async e=>{e.preventDefault();const g=id=>document.getElementById(id).value.trim();const r=build(g),text=r.text;let saved=false;
+  if(db){try{const {error}=await db.rpc('submit_enquiry',{p_kind:kind,p_name:g(who[0]),p_phone:g(who[1]),p_details:r.details});if(!error)saved=true}catch(_){}}
+  document.getElementById(outId).innerHTML=`<div class="ok">${saved?'We have received your request and will reply with a quote. You can also message us now.':'Your request is ready. Send it to us on WhatsApp and we will reply with a quote.'}</div><pre>${esc(text)}</pre><a class="btn pri" href="https://wa.me/${WA}?text=${encodeURIComponent(text)}">Send on WhatsApp</a>`})}
+req('eventForm','eventOut','event',['evName','evPhone'],g=>({details:{event:g('evType'),date:g('evDate'),bottles:g('evQty'),colour:g('evColour'),label_text:g('evText')},text:`AFIA event bottles request\nName: ${g('evName')}\nPhone: ${g('evPhone')}\nEvent: ${g('evType')} on ${g('evDate')}\nBottles: ${g('evQty')} × Adire 33cl\nLabel colour: ${g('evColour')}\nLabel text: ${g('evText')}`}));
+req('bizForm','bizOut','business',['bzName','bzPhone'],g=>({details:{business:g('bzCo'),type:g('bzType'),cases_per_month:g('bzVol'),needs:g('bzMsg')},text:`AFIA business enquiry\nBusiness: ${g('bzCo')} (${g('bzType')})\nContact: ${g('bzName')}, ${g('bzPhone')}\nCases per month: ${g('bzVol')}\nNeeds: ${g('bzMsg')}`}));
 render();
 }
 </script>
